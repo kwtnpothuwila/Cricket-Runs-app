@@ -1,98 +1,95 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 void main() {
-  runApp(const CricketApp());
+  runApp(const MiniCricketApp());
 }
 
-class CricketApp extends StatelessWidget {
-  const CricketApp({super.key});
+class MiniCricketApp extends StatelessWidget {
+  const MiniCricketApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Cricket App',
+      title: 'Mini Cricket',
 
+      // App theme
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
 
-      home: const CricketHomePage(),
+      home: const CricketGameScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class CricketHomePage extends StatefulWidget {
-  const CricketHomePage({super.key});
+class CricketGameScreen extends StatefulWidget {
+  const CricketGameScreen({super.key});
 
   @override
-  State<CricketHomePage> createState() => _CricketHomePageState();
+  State<CricketGameScreen> createState() => _CricketGameScreenState();
 }
 
-class _CricketHomePageState extends State<CricketHomePage> {
-  final Random random = Random();
-
-  final List<int?> balls = List.filled(6, null);
-
-  int currentBall = 0;
+class _CricketGameScreenState extends State<CricketGameScreen> {
+  int balls = 6;
   int totalRuns = 0;
-  
-  // Changed to start at 0 so the initial screen shows 0 instead of null
-  int currentRun = 0;
+  int? currentRun;
 
-  void playBall() {
-    if (currentBall >= 6) return;
+  // Play one ball
+  void _playBall() {
+    if (balls > 0) {
+      setState(() {
+        // Generate a random score from 0 to 6
+        currentRun = Random().nextInt(7);
 
-    // Changed to random.nextInt(7) to allow 0 to 6 runs just like your previous version
-    final int runs = random.nextInt(7);
+        // Add the score to total runs
+        totalRuns += currentRun!;
 
-    setState(() {
-      balls[currentBall] = runs;
-      totalRuns += runs;
-      currentRun = runs;
-      currentBall++;
-    });
-  }
-
-  void restartGame() {
-    setState(() {
-      for (int i = 0; i < balls.length; i++) {
-        balls[i] = null;
-      }
-
-      currentBall = 0;
-      totalRuns = 0;
-      currentRun = 0;
-    });
-  }
-
-  // Now returns the running total instead of the single run message
-  String getTotalMessage() {
-    if (currentBall == 0 && totalRuns == 0) {
-      return ''; // Keep empty before first click
+        // Reduce remaining balls
+        balls--;
+      });
     }
-    return 'Total: $totalRuns Runs';
+  }
+
+  // Restart the game
+  void _restartGame() {
+    setState(() {
+      balls = 6;
+      totalRuns = 0;
+      currentRun = null;
+    });
+  }
+
+  // Message for the current run
+  String _getRunMessage() {
+    if (currentRun == null) return '';
+
+    if (currentRun == 0) {
+      return 'No Runs';
+    }
+
+    if (currentRun == 1) {
+      return '1 Run';
+    }
+
+    return '$currentRun Runs';
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool gameFinished = currentBall == 6;
-
     return Scaffold(
+
       // GREEN BACKGROUND
       backgroundColor: const Color(0xFF2E8B57),
 
-      // -------------------------
-      // APP BAR
-      // -------------------------
       appBar: AppBar(
-        title: const Text('Cricket App'),
-        centerTitle: true,
+        title: const Text('Mini Cricket'),
 
+        // DARK GREEN APP BAR
         backgroundColor: const Color(0xFF1B5E20),
 
-        foregroundColor: Colors.white,
+        centerTitle: true,
         elevation: 0,
       ),
 
@@ -101,6 +98,9 @@ class _CricketHomePageState extends State<CricketHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
 
+            // -------------------------
+            // BAT AND BALL IMAGES
+            // -------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -109,8 +109,11 @@ class _CricketHomePageState extends State<CricketHomePage> {
               ],
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 30),
 
+            // -------------------------
+            // RUNS AND BALLS LABELS
+            // -------------------------
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -118,7 +121,7 @@ class _CricketHomePageState extends State<CricketHomePage> {
                   'Runs',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -127,91 +130,100 @@ class _CricketHomePageState extends State<CricketHomePage> {
                   'Balls',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 5),
+            const SizedBox(height: 10),
 
+            // -------------------------
+            // RUNS AND BALL VALUES
+            // -------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // CHANGED: Now displays the current random run for the specific ball
                 Text(
-                  '$currentRun',
+                  '$totalRuns',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 36,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
 
                 Text(
-                  '${6 - currentBall}',
+                  '$balls',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 36,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 30),
 
-            // CHANGED: Now shows the Total Runs message
+            // -------------------------
+            // CURRENT RUN MESSAGE
+            // -------------------------
             Text(
-              gameFinished ? 'Game Over! Total: $totalRuns Runs' : getTotalMessage(),
+              _getRunMessage(),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 17,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
 
-            gameFinished
+            // -------------------------
+            // BAT / RESTART BUTTON
+            // -------------------------
+            balls > 0
                 ? ElevatedButton(
-                    onPressed: restartGame,
+                    onPressed: _playBall,
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 12,
-                      ),
-                    ),
-
-                    child: const Text(
-                      'Restart',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  )
-                : ElevatedButton(
-                    onPressed: playBall,
-
-                    style: ElevatedButton.styleFrom(
+                      // DARK GREEN BUTTON
                       backgroundColor: const Color(0xFF176B3A),
-                      foregroundColor: Colors.white,
 
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 35,
-                        vertical: 12,
+                        horizontal: 40,
+                        vertical: 15,
                       ),
                     ),
 
                     child: const Text(
                       'Bat',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                : ElevatedButton(
+                    onPressed: _restartGame,
+
+                    style: ElevatedButton.styleFrom(
+                      // KEEP RESTART RED
+                      backgroundColor: Colors.red,
+
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 15,
+                      ),
+                    ),
+
+                    child: const Text(
+                      'Restart',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -221,19 +233,25 @@ class _CricketHomePageState extends State<CricketHomePage> {
     );
   }
 
+  // -------------------------
+  // IMAGE CONTAINER
+  // -------------------------
   Widget _buildImageContainer(String imagePath) {
     return Container(
       width: 120,
       height: 120,
 
+      // White square behind the image
       color: Colors.white,
 
       padding: const EdgeInsets.all(10),
 
       child: Image.asset(
         imagePath,
+
         fit: BoxFit.contain,
 
+        // Show this icon if image cannot be loaded
         errorBuilder: (context, error, stackTrace) {
           return const Icon(
             Icons.image_not_supported,
