@@ -36,23 +36,23 @@ class _CricketGameScreenState extends State<CricketGameScreen> {
   int totalRuns = 0;
   int? currentRun;
 
-  // Play one ball
+
   void _playBall() {
     if (balls > 0) {
       setState(() {
-        // Generate a random score from 0 to 6
+      
         currentRun = Random().nextInt(7);
 
-        // Add the score to total runs
+        
         totalRuns += currentRun!;
 
-        // Reduce remaining balls
+        
         balls--;
       });
     }
   }
 
-  // Restart the game
+  
   void _restartGame() {
     setState(() {
       balls = 6;
@@ -61,7 +61,7 @@ class _CricketGameScreenState extends State<CricketGameScreen> {
     });
   }
 
-  // Message for the current run
+  
   String _getRunMessage() {
     if (currentRun == null) return '';
 
@@ -80,13 +80,13 @@ class _CricketGameScreenState extends State<CricketGameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
 
-      // GREEN BACKGROUND
+      
       backgroundColor: const Color(0xFF2E8B57),
 
       appBar: AppBar(
         title: const Text('Mini Cricket'),
 
-        // DARK GREEN APP BAR
+        
         backgroundColor: const Color(0xFF1B5E20),
 
         centerTitle: true,
@@ -98,22 +98,22 @@ class _CricketGameScreenState extends State<CricketGameScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
 
-            // -------------------------
-            // BAT AND BALL IMAGES
-            // -------------------------
+            
+            
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildImageContainer('assets/bat.png'),
-                _buildImageContainer('assets/ball.png'),
+                _buildImageContainer('assets/bat.jpg'),
+                _buildImageContainer('assets/ball.webp'),
               ],
             ),
 
             const SizedBox(height: 30),
 
-            // -------------------------
-            // RUNS AND BALLS LABELS
-            // -------------------------
+            
+            
+            
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -167,9 +167,9 @@ class _CricketGameScreenState extends State<CricketGameScreen> {
 
             const SizedBox(height: 30),
 
-            // -------------------------
-            // CURRENT RUN MESSAGE
-            // -------------------------
+            
+          
+          
             Text(
               _getRunMessage(),
               style: const TextStyle(
@@ -181,9 +181,9 @@ class _CricketGameScreenState extends State<CricketGameScreen> {
 
             const SizedBox(height: 20),
 
-            // -------------------------
-            // BAT / RESTART BUTTON
-            // -------------------------
+            
+            
+            
             balls > 0
                 ? ElevatedButton(
                     onPressed: _playBall,
@@ -233,15 +233,15 @@ class _CricketGameScreenState extends State<CricketGameScreen> {
     );
   }
 
-  // -------------------------
-  // IMAGE CONTAINER
-  // -------------------------
+  
+  
+  
   Widget _buildImageContainer(String imagePath) {
     return Container(
       width: 120,
       height: 120,
 
-      // White square behind the image
+      
       color: Colors.white,
 
       padding: const EdgeInsets.all(10),
@@ -251,7 +251,7 @@ class _CricketGameScreenState extends State<CricketGameScreen> {
 
         fit: BoxFit.contain,
 
-        // Show this icon if image cannot be loaded
+        
         errorBuilder: (context, error, stackTrace) {
           return const Icon(
             Icons.image_not_supported,
